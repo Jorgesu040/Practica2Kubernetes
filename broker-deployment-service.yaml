@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetes-broker
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: broker
+  template:
+    metadata:
+      labels:
+        app: broker
+    spec:
+      nodeSelector:
+        role: broker
+      containers:
+      - name: kubernetes-broker
+        image: docker.io/jorgematesanz/broker-filemanager:1.0
+        imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: broker-service
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: broker
+  ports:
+  - port: 32002
+    targetPort: 32002
+    nodePort: 32002
+  externalTrafficPolicy: Cluster

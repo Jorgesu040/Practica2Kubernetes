@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetes-filemanager
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: filemanager
+  template:
+    metadata:
+      labels:
+        app: filemanager
+    spec:
+      containers:
+      - name: kubernetes-filemanager
+        image: docker.io/jorgematesanz/server-filemanager:1.0
+        imagePullPolicy: Always
+        volumeMounts:
+        - mountPath: /app/FileManagerDir
+          name: directorio-filemanager
+      volumes:
+      - name: directorio-filemanager
+        persistentVolumeClaim:
+          claimName: kube-nfs-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: filemanager-service
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: filemanager
+  ports:
+  - port: 32001
+    targetPort: 32001
+    nodePort: 32001
+  externalTrafficPolicy: Cluster

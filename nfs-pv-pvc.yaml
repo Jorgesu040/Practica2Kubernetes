@@ -1,0 +1,27 @@
+# Define un volumen persistente con almacenamiento NFS
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kube-nfs-pv
+spec:
+  storageClassName: storage-nfs
+  capacity:
+    storage: 10Gi  # Capacidad de almacenamiento de 10 gigabytes
+  accessModes:
+    - ReadWriteMany  # Permite lectura y escritura desde múltiples nodos
+  nfs:
+    server: NFS_SERVER_IP  # Dirección IP del servidor NFS
+    path: "/exports/filemanager"  # Ruta del compartido NFS en el servidor
+---
+# Solicita acceso al volumen persistente definido anteriormente
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: kube-nfs-pvc
+spec:
+  storageClassName: storage-nfs  # Clase de almacenamiento a usar
+  accessModes:
+    - ReadWriteMany  # Requiere acceso de lectura y escritura múltiple
+  resources:
+    requests:
+      storage: 10Gi  # Solicita 10 gigabytes de almacenamiento
